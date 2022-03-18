@@ -3,47 +3,31 @@ pipeline {
     environment {
         APP_NAME = 'MMS-API'
         APP_VERSION = '1.0.1'
+        PACKAGE_NAME = 'MMS-API'
     }
     stages {
-//        stage('Hello') {
-//            steps {
-//                sh 'mvn --version'
-//            }
-//        }
-//        stage('Step') {
-//            steps {
-//                sh 'echo "Hello World"'
-//                sh '''
-//                    pwd
-//                    ls -al
-//                '''
-//                // 设置重试时间
-//                retry(3) {
-//                    sh 'sh ./jenkins/scripts/retry.sh'
-//                    // 设置超时时间
-//                    timeout(time: 5, unit: 'SECONDS') {
-//                        sh 'sh ./jenkins/scripts/timeout.sh'
-//                    }
-//                }
-//            }
-//        }
-        stage('Maven') {
+        // 构建 jar 生成 openapi 文档
+        stage('Build') {
             steps {
-                sh 'printenv'
-                sh "mvn --version"
+                sh 'sh ./jenkins/scripts/build.sh'
             }
             agent {
                 docker "maven:3.6.3-slim"
-            }
-            environment {
-                PACKAGE_NAME = 'MMS-API'
+                // TODO 测试挂载卷
             }
         }
 
-        stage('Java') {
+        // 单元测试
+        stage('Test') {
             steps {
-                sh 'printenv'
-                sh "java -version"
+                sh 'sh ./jenkins/scripts/test.sh'
+            }
+        }
+
+        // 部署容器
+        stage('Deploy') {
+            steps {
+                sh 'sh ./jenkins/scripts/deploy.sh'
             }
             agent {
                 docker "openjdk:8-jre-slim-buster"
@@ -51,12 +35,12 @@ pipeline {
             environment {
                 IMAGE_NAME = 'mms-api'
                 IMAGE_VERSION = '1.0.0'
+                DOCKERFILE_NAME = "Dockerfile"
             }
-        }
-
-        stage('Env') {
-            steps {
-                sh 'printenv'
+            post {
+                failure {
+                    echo "部署失败"
+                }
             }
         }
     }
@@ -67,9 +51,6 @@ pipeline {
         }
         success {
             echo "Success"
-            mail to: "ylhaaao@163.com",
-                 subject: "自动化构建成功: ${currentBuild.displayName}",
-                 body: "构建地址: ${env.BUILD_URL}"
         }
         failure {
             echo "Failure"
