@@ -1,0 +1,6 @@
+redirect.sh: line 22: ec: command not found
+test
+test
+test
+test
+test

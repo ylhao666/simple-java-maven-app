@@ -1,0 +1,3 @@
+. ./beinclude.sh
+
+echo $url
