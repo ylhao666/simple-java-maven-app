@@ -77,3 +77,10 @@ while [ $row -le 9 ]; do
     column=$((column+1))
     echo ""
 done
+
+containerId=$(ls | grep ylhaaao)
+echo "${containerId}"
+
+if [ "${containerId}" = "" ]; then
+    echo "相等"
+fi

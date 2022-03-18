@@ -2,18 +2,23 @@ pipeline {
     agent any
     environment {
         APP_NAME = 'MMS-API'
-        APP_VERSION = '1.0.1'
-        PACKAGE_NAME = 'MMS-API'
+        APP_VERSION = '1.0.0'
+        PACKAGE_NAME = 'My-App'
     }
     stages {
         // 构建 jar 生成 openapi 文档
         stage('Build') {
+            agent {
+                docker {
+                    image 'maven:3.6.3-slim'
+                    // TODO 修改
+                    args '-v /root/.m2:/root/.m2'
+                }
+            }
             steps {
                 sh 'sh ./jenkins/scripts/build.sh'
-            }
-            agent {
-                docker "maven:3.6.3-slim"
-                // TODO 测试挂载卷
+                // 暂存 Jar 包，避免不同 agent 下取不到文件
+                stash includes: '**/target/*.jar', name: 'jar'
             }
         }
 
@@ -26,16 +31,14 @@ pipeline {
 
         // 部署容器
         stage('Deploy') {
+            // TODO retry
             steps {
+                unstash 'jar'
                 sh 'sh ./jenkins/scripts/deploy.sh'
             }
-            agent {
-                docker "openjdk:8-jre-slim-buster"
-            }
             environment {
-                IMAGE_NAME = 'mms-api'
+                IMAGE_NAME = 'my-app'
                 IMAGE_VERSION = '1.0.0'
-                DOCKERFILE_NAME = "Dockerfile"
             }
             post {
                 failure {
