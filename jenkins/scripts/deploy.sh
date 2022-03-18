@@ -22,7 +22,7 @@ fi
 
 # 运行新容器
 echo "运行新容器, ContainerName: ${APP_NAME}-${APP_VERSION}"
-docker run -dp 9092:9092 --name "${APP_NAME}-${APP_VERSION}" "${IMAGE_NAME}:${IMAGE_VERSION}"
+docker run --restart=always -dp "${SERVER_PORT}:${SERVER_PORT}" --name "${APP_NAME}-${APP_VERSION}" "${IMAGE_NAME}:${IMAGE_VERSION}" --server.port="${SERVER_PORT}"
 
 # 判断容器运行情况，未运行则抛出异常
 echo "容器运行情况:"

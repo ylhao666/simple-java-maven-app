@@ -1,17 +1,17 @@
 pipeline {
     agent any
     environment {
-        APP_NAME = 'MMS-API'
+        APP_NAME = 'My-App'
         APP_VERSION = '1.0.0'
         PACKAGE_NAME = 'My-App'
     }
     stages {
-        // 构建 jar 生成 openapi 文档
+        // 构建 jar
         stage('Build') {
             agent {
                 docker {
                     image 'maven:3.6.3-slim'
-                    // TODO 修改
+                    // 挂载在宿主机上，复用依赖文件
                     args '-v /root/.m2:/root/.m2'
                 }
             }
@@ -31,14 +31,14 @@ pipeline {
 
         // 部署容器
         stage('Deploy') {
-            // TODO retry
-            steps {
-                unstash 'jar'
-                sh 'sh ./jenkins/scripts/deploy.sh'
-            }
             environment {
                 IMAGE_NAME = 'my-app'
                 IMAGE_VERSION = '1.0.0'
+                SERVER_PORT = '7072'
+            }
+            steps {
+                unstash 'jar'
+                sh 'sh ./jenkins/scripts/deploy.sh'
             }
             post {
                 failure {
