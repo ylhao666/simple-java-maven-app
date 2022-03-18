@@ -1,5 +1,9 @@
 pipeline {
-    agent none
+    agent any
+    environment {
+        APP_NAME = 'MMS-API'
+        APP_VERSION = '1.0.1'
+    }
     stages {
 //        stage('Hello') {
 //            steps {
@@ -25,19 +29,34 @@ pipeline {
 //        }
         stage('Maven') {
             steps {
+                sh 'printenv'
                 sh "mvn --version"
             }
             agent {
                 docker "maven:3.6.3-slim"
             }
+            environment {
+                PACKAGE_NAME = 'MMS-API'
+            }
         }
 
         stage('Java') {
             steps {
+                sh 'printenv'
                 sh "java --version"
             }
             agent {
-                docker "openjdk:8-jre-slim-buster"
+                docker "openjdk:8-jdk-slim-buster"
+            }
+            environment {
+                IMAGE_NAME = 'mms-api'
+                IMAGE_VERSION = '1.0.0'
+            }
+        }
+
+        stage('Env') {
+            steps {
+                sh 'printenv'
             }
         }
     }
