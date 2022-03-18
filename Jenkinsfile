@@ -15,13 +15,10 @@ pipeline {
                     pwd
                     ls -al
                 '''
-                // 设置超时时间
-                timeout(time: 5, unit: 'SECONDS') {
-                    sh 'sh ./jenkins/scripts/timeout.sh'
-                }
                 // 设置重试时间
                 retry(3) {
                     sh 'sh ./jenkins/scripts/retry.sh'
+                    // 设置超时时间
                     timeout(time: 5, unit: 'SECONDS') {
                         sh 'sh ./jenkins/scripts/timeout.sh'
                     }
