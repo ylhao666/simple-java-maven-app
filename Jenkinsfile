@@ -16,12 +16,12 @@ pipeline {
                     ls -al
                 '''
                 timeout(time: 5, unit: 'SECONDS') {
-                    sh './scripts/timeout.sh'
+                    sh './jenkins/scripts/timeout.sh'
                 }
                 retry(3) {
-                    sh './scripts/retry.sh'
+                    sh './jenkins/scripts/retry.sh'
                     timeout(time: 5, unit: 'SECONDS') {
-                        sh './scripts/timeout.sh'
+                        sh './jenkins/scripts/timeout.sh'
                     }
                 }
             }
