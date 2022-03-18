@@ -43,10 +43,10 @@ pipeline {
         stage('Java') {
             steps {
                 sh 'printenv'
-                sh "java --version"
+                sh "java -version"
             }
             agent {
-                docker "openjdk:8-jdk-slim-buster"
+                docker "openjdk:8-jre-slim-buster"
             }
             environment {
                 IMAGE_NAME = 'mms-api'
