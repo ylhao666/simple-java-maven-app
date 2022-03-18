@@ -67,6 +67,9 @@ pipeline {
         }
         success {
             echo "Success"
+            mail to: "ylhaaao@163.com",
+                 subject: "自动化构建成功: ${currentBuild.displayName}",
+                 body: "构建地址: ${env.BUILD_URL}"
         }
         failure {
             echo "Failure"
